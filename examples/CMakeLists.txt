@@ -56,6 +56,8 @@ add_library(${TARGET} STATIC
     common-whisper.cpp
     grammar-parser.h
     grammar-parser.cpp
+    vad-segmenter-generator.h
+    vad-segmenter-generator.cpp
     ${COMMON_SOURCES_FFMPEG}
     )
 

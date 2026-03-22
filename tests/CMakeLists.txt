@@ -110,3 +110,11 @@ target_compile_definitions(${VAD_TEST} PRIVATE
     SAMPLE_PATH="${PROJECT_SOURCE_DIR}/samples/jfk.wav")
 add_test(NAME ${VAD_TEST} COMMAND ${VAD_TEST})
 set_tests_properties(${VAD_TEST} PROPERTIES LABELS "base;en")
+
+# VadSegmenterGenerator test
+set(VAD_TEST vad-segmenter-generator-test)
+add_executable(${VAD_TEST} ${VAD_TEST}.cpp)
+target_include_directories(${VAD_TEST} PRIVATE ../include ../ggml/include ../examples)
+target_link_libraries(${VAD_TEST} PRIVATE common)
+add_test(NAME ${VAD_TEST} COMMAND ${VAD_TEST} "${PROJECT_SOURCE_DIR}/models/for-tests-silero-v6.2.0-ggml.bin" "${PROJECT_SOURCE_DIR}/samples/jfk.wav")
+set_tests_properties(${VAD_TEST} PROPERTIES LABELS "unit")
