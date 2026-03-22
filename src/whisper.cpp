@@ -5092,14 +5092,14 @@ bool whisper_vad_detect_speech(
         n_chunks += 1;  // Add one more chunk for remaining samples.
     }
 
-    WHISPER_LOG_INFO("%s: detecting speech in %d samples\n", __func__, n_samples);
-    WHISPER_LOG_INFO("%s: n_chunks: %d\n", __func__, n_chunks);
+    WHISPER_LOG_DEBUG("%s: detecting speech in %d samples\n", __func__, n_samples);
+    WHISPER_LOG_DEBUG("%s: n_chunks: %d\n", __func__, n_chunks);
 
     // Reset LSTM hidden/cell states
     ggml_backend_buffer_clear(vctx->buffer, 0);
 
     vctx->probs.resize(n_chunks);
-    WHISPER_LOG_INFO("%s: props size: %u\n", __func__, n_chunks);
+    WHISPER_LOG_DEBUG("%s: props size: %u\n", __func__, n_chunks);
 
     std::vector<float> window(vctx->n_window, 0.0f);
 
@@ -5125,7 +5125,7 @@ bool whisper_vad_detect_speech(
         const int chunk_len = idx_end - idx_start;
 
         if (chunk_len < vctx->n_window) {
-            WHISPER_LOG_INFO("%s: chunk_len: %d < n_window: %d\n", __func__, chunk_len, vctx->n_window);
+            WHISPER_LOG_DEBUG("%s: chunk_len: %d < n_window: %d\n", __func__, chunk_len, vctx->n_window);
             std::vector<float> partial_chunk(vctx->n_window, 0.0f);
             std::copy(samples + idx_start, samples + idx_end, partial_chunk.begin());
 
@@ -5158,7 +5158,7 @@ bool whisper_vad_detect_speech(
     }
 
     vctx->t_vad_us += ggml_time_us() - t_start_vad_us;
-    WHISPER_LOG_INFO("%s: vad time = %.2f ms processing %d samples\n", __func__, 1e-3f * vctx->t_vad_us, n_samples);
+    WHISPER_LOG_DEBUG("%s: vad time = %.2f ms processing %d samples\n", __func__, 1e-3f * vctx->t_vad_us, n_samples);
 
     ggml_backend_sched_reset(sched);
 
@@ -5188,7 +5188,7 @@ float * whisper_vad_probs(struct whisper_vad_context * vctx) {
 struct whisper_vad_segments * whisper_vad_segments_from_probs(
         struct whisper_vad_context *  vctx,
                 whisper_vad_params    params) {
-    WHISPER_LOG_INFO("%s: detecting speech timestamps using %d probabilities\n", __func__, whisper_vad_n_probs(vctx));
+    WHISPER_LOG_DEBUG("%s: detecting speech timestamps using %d probabilities\n", __func__, whisper_vad_n_probs(vctx));
 
     int     n_probs                 = whisper_vad_n_probs(vctx);
     float * probs                   = whisper_vad_probs(vctx);
