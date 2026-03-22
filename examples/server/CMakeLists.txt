@@ -2,9 +2,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(TARGET whisper-server)
-add_executable(${TARGET} server.cpp httplib.h)
+add_executable(${TARGET}
+    server.cpp
+    httplib.h
+    ../whisper-streaming/whisper-streaming-decoder.cpp
+)
 
 include(DefaultTargetOptions)
+
+target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../whisper-streaming)
 
 target_link_libraries(${TARGET} PRIVATE common json_cpp whisper ${CMAKE_THREAD_LIBS_INIT})
 
