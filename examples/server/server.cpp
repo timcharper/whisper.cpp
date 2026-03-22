@@ -198,11 +198,9 @@ int main(int argc, char **argv)
                             fprintf(stderr, "SSE: Inference took %ld ms for %.2f s audio\n",
                                     ms, (float)speech_seg->size() / 16000.0f);
                             if (!text.empty()) {
-                                json jres = {{"text", text}, {"segments", json::array({{{{"text", text}}}})}};                                {
-                                    std::lock_guard<std::mutex> slock(sstate->mutex);
-                                    sstate->results.push_back("data: " + jres.dump() + "\n\n");
-                                    sstate->cv.notify_all();
-                                }
+                                std::lock_guard<std::mutex> slock(sstate->mutex);
+                                sstate->results.push_back("data: " + json{{"text", text}}.dump() + "\n\n");
+                                sstate->cv.notify_all();
                             }
                         }
                     }
@@ -217,11 +215,9 @@ int main(int argc, char **argv)
                             text = stream_decoder.decode_utterance(*speech_seg);
                         }
                         if (!text.empty()) {
-                            json jres = {{"text", text}, {"segments", json::array({{{{"text", text}}}})}};                            {
-                                std::lock_guard<std::mutex> slock(sstate->mutex);
-                                sstate->results.push_back("data: " + jres.dump() + "\n\n");
-                                sstate->cv.notify_all();
-                            }
+                            std::lock_guard<std::mutex> slock(sstate->mutex);
+                            sstate->results.push_back("data: " + json{{"text", text}}.dump() + "\n\n");
+                            sstate->cv.notify_all();
                         }
                     }
                 }
