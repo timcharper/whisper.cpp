@@ -690,6 +690,15 @@ extern "C" {
     WHISPER_API struct whisper_vad_context * whisper_vad_init_from_file_with_params(const char * path_model,              struct whisper_vad_context_params params);
     WHISPER_API struct whisper_vad_context * whisper_vad_init_with_params          (struct whisper_model_loader * loader, struct whisper_vad_context_params params);
 
+    // Reset the LSTM hidden and cell states. Call once after init and again
+    // whenever a speech segment ends to start the next detection fresh.
+    WHISPER_API void whisper_vad_reset_state(struct whisper_vad_context * vctx);
+
+    // Returns the number of samples per inference window for this model.
+    // Feed exactly this many samples per call to whisper_vad_detect_speech
+    // when using persistent LSTM state (streaming mode).
+    WHISPER_API int  whisper_vad_get_n_window(struct whisper_vad_context * vctx);
+
     WHISPER_API bool whisper_vad_detect_speech(
             struct whisper_vad_context * vctx,
                            const float * samples,
