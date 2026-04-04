@@ -133,11 +133,15 @@ int main(int argc, char **argv)
         whisper_params params = default_params;
         bool is_sse = req.get_header_value("Accept") == "text/event-stream";
 
+        if (req.has_param("prompt")) {
+            params.prompt = req.get_param_value("prompt");
+        }
+
         if (is_sse) {
-            fprintf(stderr, "SSE: New connection\n");
+            fprintf(stderr, "SSE: New connection (prompt: '%s')\n", params.prompt.c_str());
             auto sstate = std::make_shared<stream_state>();
-            // Each SSE connection starts with a fresh transcript context.
-            stream_decoder.reset_context();
+            // Each SSE connection starts with a fresh transcript context, seeded by the optional prompt.
+            stream_decoder.reset_context(params.prompt);
             if (!params.vad_model.empty()) {
                 VadSegmenterGenerator::Params vparams;
                 vparams.vad_model_path = params.vad_model;
@@ -239,6 +243,7 @@ int main(int argc, char **argv)
             std::lock_guard<std::mutex> lock(whisper_mutex);
             whisper_full_params wparams = whisper_full_default_params(WHISPER_SAMPLING_GREEDY);
             wparams.n_threads = params.n_threads;
+            wparams.initial_prompt = params.prompt.c_str();
             whisper_full_parallel(ctx, wparams, pcmf32.data(), pcmf32.size(), 1);
             res.set_content(get_result_json(ctx, params).dump(), "application/json");
         } });

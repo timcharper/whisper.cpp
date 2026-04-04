@@ -25,7 +25,8 @@ public:
 
   // Flushes the internal token history.
   // Call this when a conversation ends or you want to start a completely fresh context.
-  void reset_context();
+  // If initial_prompt is provided, it will be tokenized and used as the starting context.
+  void reset_context(const std::string &initial_prompt = "");
 
 private:
   whisper_context *ctx;

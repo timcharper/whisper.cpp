@@ -162,7 +162,18 @@ std::string WhisperStreamingDecoder::decode_utterance(const std::vector<float> &
   return result;
 }
 
-void WhisperStreamingDecoder::reset_context()
+void WhisperStreamingDecoder::reset_context(const std::string &initial_prompt)
 {
   context_tokens.clear();
+  if (!initial_prompt.empty())
+  {
+    context_tokens.resize(initial_prompt.size());
+    int n_tokens = whisper_tokenize(ctx, initial_prompt.c_str(), context_tokens.data(), (int)context_tokens.size());
+    if (n_tokens < 0)
+    {
+      context_tokens.resize(-n_tokens);
+      n_tokens = whisper_tokenize(ctx, initial_prompt.c_str(), context_tokens.data(), (int)context_tokens.size());
+    }
+    context_tokens.resize(std::max(0, n_tokens));
+  }
 }
